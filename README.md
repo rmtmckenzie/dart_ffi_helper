@@ -16,6 +16,3 @@ main() {
   writeToCstr(emptyCstr.rawPtr)
 }
 ```
-
-This software is in the public domain:
-[unlicense](https://gitlab.com/MagicGuitar/dart_ffi_helper/UNLICENSE)
