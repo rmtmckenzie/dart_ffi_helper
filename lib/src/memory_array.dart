@@ -65,7 +65,7 @@ class CharArray extends MemoryArray<Uint8, Uint8List> {
   CharArray.fromRawPointer(Pointer<Uint8> ptr, {int count = 1})
       : super.fromRawPointer(ptr, count: count);
   CharArray.allocate({int count = 1}) : super.allocate(count: count);
-  static CharArray fromUtf8String(String str) {
+  factory CharArray.fromUtf8String(String str) {
     final encodedStr = utf8.encode(str);
     final char = CharArray.fromUint8List(encodedStr);
     return char;
