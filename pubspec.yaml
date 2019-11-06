@@ -1,7 +1,7 @@
 name: ffi_helper
 description: Some FFI helper classes
 about: Provides some functionality to make working with the FFI a little easier
-version: 1.0.0
+version: 1.1.0
 homepage: https://gitlab.com/MagicGuitar/dart_ffi_helper
 author: Marvin Hannott <marvinhannott@gmail.com>
 
