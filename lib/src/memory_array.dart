@@ -1,77 +1,63 @@
 import 'dart:convert';
 import 'dart:ffi';
 
+import 'dart:typed_data' as ffi;
 import 'dart:typed_data';
+import 'package:ffi/ffi.dart' as ffi;
 
 /// Array of heap allocated memory.
-/// [T] must be the suitable TypedData for the native type [N].
-///
-/// Example:
-/// ````
-/// MemoryArray<Uint8, Uint8List>();
-/// MemoryArray<Int16, Int16List>();
-/// ````
-class MemoryArray<N extends NativeType, T extends List<int>> {
+abstract class MemoryArray<N extends NativeType> {
   /// Pointer to the first element
   final Pointer<N> rawPtr;
-  T _view;
+  List<int> _view;
 
-  /// View into the array. Changes to the view will change the underlying memory.
-  T get view => _view;
+  /// View into the allocated memory.
+  /// Changes to the view will also change the
+  /// content of the underlying memory.
+  List<int> get view;
 
-  /// Address of the first element
-  int get address => rawPtr.address;
-
-  /// Length of the array
-  int get length => _view.length;
-
-  MemoryArray.fromTypedData(T data)
-      : rawPtr = Pointer<N>.allocate(count: data.length) {
-    _view = rawPtr.asExternalTypedData(count: data.length) as List;
+  MemoryArray.fromTypedList(List<int> data)
+      : rawPtr = ffi.allocate<N>(count: data.length) {
+    _view = _asTypedList(rawPtr, data.length);
     (_view).setAll(0, data);
   }
 
   /// Move [rawPtr] to a new MemoryArray. Don't free [rawPtr] manually.
-  MemoryArray.fromRawPointer(this.rawPtr, {int count = 1}) {
-    _view = rawPtr.asExternalTypedData(count: count) as T;
+  MemoryArray.fromPointer(this.rawPtr, {int count = 1}) {
+    _view = _asTypedList(rawPtr, count);
   }
 
   /// Allocates an array with [count] elements of [N]
   MemoryArray.allocate({int count = 1})
       : assert(count > 0, "count must be bigger than 1"),
-        rawPtr = Pointer.allocate(count: count) {
-    _view = rawPtr.asExternalTypedData(count: count) as T;
+        rawPtr = ffi.allocate(count: count) {
+    _view = _asTypedList(rawPtr, count);
   }
+
+  List<int> _asTypedList(Pointer<N> ptr, int length);
 
   /// Frees the allocated memory.
   /// Don't forget to call or there might be a memory leak.
   /// Consider Exceptions.
   void free() {
-    rawPtr.free();
+    ffi.free(rawPtr);
   }
 }
 
-/// Helper class which deals with fixed sized char arrays.
-///
-/// If you need a Null terminated Cstring you can do that easily:
-/// ````
-/// // using the Null character
-/// final cstr = "Some String\x00";
-/// // set last entry to '0'
-/// list.last = 0;
-/// ````
-class CharArray extends MemoryArray<Uint8, Uint8List> {
-  CharArray.fromUint8List(Uint8List str) : super.fromTypedData(str);
-  CharArray.fromRawPointer(Pointer<Uint8> ptr, {int count = 1})
-      : super.fromRawPointer(ptr, count: count);
-  CharArray.allocate({int count = 1}) : super.allocate(count: count);
-  factory CharArray.fromUtf8String(String str) {
-    final encodedStr = utf8.encode(str);
-    final char = CharArray.fromUint8List(encodedStr);
-    return char;
+class Uint8Array extends MemoryArray<Uint8> {
+  @override
+  Uint8List get view => _view;
+
+  Uint8Array.fromTypedList(Uint8List data) : super.fromTypedList(data);
+  Uint8Array.fromPointer(Pointer<Uint8> ptr) : super.fromPointer(ptr);
+  Uint8Array.allocate({int count = 1}) : super.allocate(count: count);
+  Uint8Array.fromUtf8(String str) : super.allocate(count: str.length) {
+    final encoded = utf8.encode(str);
+    _view.setAll(0, encoded);
   }
 
-  String toUtf8String() {
-    return utf8.decode(view);
+  @override
+  Uint8List _asTypedList(Pointer<Uint8> ptr, int length) {
+    return ptr.asTypedList(length);
   }
 }
