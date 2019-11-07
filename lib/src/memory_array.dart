@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
 
 import 'dart:typed_data' as ffi;
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart' as ffi;
+import 'package:async/async.dart';
 
 part 'auto_free.dart';
 
