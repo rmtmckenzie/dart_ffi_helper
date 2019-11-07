@@ -1,7 +1,7 @@
 name: ffi_helper
 description: Some FFI helper classes
 about: Just some wrapper classes to make working with raw pointers and memory views a little simpler.
-version: 1.1.0
+version: 1.1.1
 homepage: https://gitlab.com/MagicGuitar/dart_ffi_helper
 author: Marvin Hannott <marvinhannott@gmail.com>
 
