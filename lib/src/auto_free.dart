@@ -51,3 +51,44 @@ class AutoFree<N extends NativeType> implements MemoryArray<N> {
   List<int> _asTypedList(Pointer<N> ptr, int length) => null;
   var _view;
 }
+
+@experimental
+class AutoFreeGroup {
+  @nonVirtual
+  List<MemoryArray> _arrays;
+  @nonVirtual
+  List<MemoryArray> Function() onAllocate;
+  @nonVirtual
+  void Function(List<MemoryArray>) onFree = (List<MemoryArray> arrays) {};
+  RestartableTimer _timer;
+
+  AutoFreeGroup(
+      {Duration freeAfter = const Duration(minutes: 2),
+      @required this.onAllocate,
+      this.onFree})
+      : _arrays = onAllocate() {
+    _timer = RestartableTimer(freeAfter, free);
+  }
+
+  @nonVirtual
+  UnmodifiableListView<MemoryArray> get arrays {
+    _reset();
+    return UnmodifiableListView(_arrays);
+  }
+
+  void _reset() {
+    _timer.reset();
+    if (_arrays == null) {
+      _arrays = onAllocate();
+    }
+  }
+
+  @nonVirtual
+  void free() {
+    if (_arrays == null) return;
+    _timer.cancel();
+    onFree(_arrays);
+    _arrays.forEach((arr) => ffi.free(arr.rawPtr));
+    _arrays = null;
+  }
+}
