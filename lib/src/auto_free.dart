@@ -1,33 +1,53 @@
 part of "memory_array.dart";
 
-abstract class AutoFreeMemoryArray<N extends NativeType>
-    implements MemoryArray<N> {
-  final bool zeroBeforeFree;
+/// Frees allocated memory when it isn't accessed for a specified duration.
+/// If it gets accessed again, new memory will be allocated.
+@experimental
+@sealed
+class AutoFree<N extends NativeType> implements MemoryArray<N> {
   RestartableTimer _timer;
-  Pointer<N> _rawPtr;
+  MemoryArray<N> _array;
+
+  /// Gets invoked when memory is freed automatically.
+  void Function(MemoryArray<N> memArr) onFree = (MemoryArray<N> memArr) {};
+
+  /// Gets invoked when new Memory is allocated
+  final MemoryArray<N> Function() onAllocate;
   Pointer<N> get rawPtr {
-    _timer.reset();
-    if (_rawPtr == null) {
-      _rawPtr = ffi.allocate(count: view.length);
-      final tmpView = _asTypedList(_rawPtr, view.length);
-      tmpView.setAll(0, view);
-      _view = tmpView;
-    }
-    return _rawPtr;
+    _reset();
+    return _array.rawPtr;
   }
 
-  AutoFreeMemoryArray.fromTypedList(List<int> data,
+  List<int> get view {
+    _reset();
+    return _array.view;
+  }
+
+  void _reset() {
+    _timer.reset();
+    if (_array == null) {
+      _array = onAllocate();
+    }
+  }
+
+  AutoFree(
       {Duration freeAfter = const Duration(minutes: 2),
-      this.zeroBeforeFree = false}) {
+      @required this.onAllocate,
+      this.onFree}) {
+    _array = onAllocate();
     _timer = RestartableTimer(freeAfter, free);
   }
 
+  /// Frees the allocated memory. Doing so manually has the same effect as waiting
+  /// for it to be freed automatically. Calling this method when memory has been freed has no effect.
   void free() {
-    if (zeroBeforeFree) {
-      _view.fillRange(0, _view.length - 1, 0);
-    }
-    ffi.free(rawPtr);
-    _rawPtr = null;
+    if (_array == null) return;
     _timer.cancel();
+    onFree(this._array);
+    _array.free();
+    _array = null;
   }
+
+  List<int> _asTypedList(Pointer<N> ptr, int length) => null;
+  var _view;
 }
