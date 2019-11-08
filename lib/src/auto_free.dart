@@ -54,12 +54,17 @@ class AutoFree<N extends NativeType> implements MemoryArray<N> {
   }
 }
 
+/// Manages multiple [MemoryArray]s and works just like it.
 @experimental
 class AutoFreeGroup {
   @nonVirtual
   List<MemoryArray> _arrays;
+
+  /// Gets invoked when memory gets allocated.
   @nonVirtual
   List<MemoryArray> Function() onAllocate;
+
+  /// Gets invoked when memory gets freed.
   @nonVirtual
   void Function(List<MemoryArray>) onFree = (List<MemoryArray> arrays) {};
   RestartableTimer _timer;
@@ -85,6 +90,8 @@ class AutoFreeGroup {
     }
   }
 
+  /// Frees all [MemoryArray]s and invokes [onFree].
+  /// Does nothing when memory has been freed already.
   @nonVirtual
   void free() {
     if (_arrays == null) return;
