@@ -1,4 +1,9 @@
-part of "memory_array.dart";
+import "package:meta/meta.dart";
+import 'memory_array.dart';
+import 'package:async/async.dart';
+import 'dart:ffi';
+import 'package:ffi/ffi.dart' as ffi;
+import 'dart:collection';
 
 /// Frees allocated memory when it isn't accessed for a specified duration.
 /// If it gets accessed again, new memory will be allocated.
@@ -47,9 +52,6 @@ class AutoFree<N extends NativeType> implements MemoryArray<N> {
     _array.free();
     _array = null;
   }
-
-  List<int> _asTypedList(Pointer<N> ptr, int length) => null;
-  var _view;
 }
 
 @experimental

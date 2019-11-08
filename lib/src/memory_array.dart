@@ -1,15 +1,9 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
-import 'package:meta/meta.dart';
 
 import 'dart:typed_data' as ffi;
 import 'dart:typed_data';
 import 'package:ffi/ffi.dart' as ffi;
-import 'package:async/async.dart';
-import 'package:ffi_helper/ffi_helper.dart';
-
-part 'auto_free.dart';
 
 /// Array of heap allocated memory.
 abstract class MemoryArray<N extends NativeType> {
