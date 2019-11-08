@@ -11,5 +11,5 @@
 ## 1.1.1
 - update description and readme
 
-## 1.2.1
+## 1.2.0
 - add experimental AutoFree and AutoFreeGroup for automatic memory management
