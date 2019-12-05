@@ -16,6 +16,9 @@ abstract class MemoryArray<N extends NativeType> {
   /// content of the underlying memory.
   List<int> get view;
 
+  /// Length of [view];
+  int get length => _view.length;
+
   MemoryArray.fromTypedList(List<int> data)
       : rawPtr = ffi.allocate<N>(count: data.length) {
     _view = _asTypedList(rawPtr, data.length);
@@ -41,6 +44,14 @@ abstract class MemoryArray<N extends NativeType> {
   /// Consider Exceptions.
   void free() {
     ffi.free(rawPtr);
+  }
+
+  int operator [](int i) {
+    return _view[i];
+  }
+
+  void operator []=(int i, int val) {
+    _view[i] = val;
   }
 }
 
