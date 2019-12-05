@@ -13,3 +13,6 @@
 
 ## 1.2.0
 - add experimental AutoFree and AutoFreeGroup for automatic memory management
+
+## 1.3.0
+- add [length] propberty and operator [] and []= to MemoryArray and AutoFree. It just forwards to [view] and makes things a little more concise
