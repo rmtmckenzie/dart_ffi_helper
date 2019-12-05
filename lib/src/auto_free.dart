@@ -13,6 +13,11 @@ class AutoFree<N extends NativeType> implements MemoryArray<N> {
   RestartableTimer _timer;
   MemoryArray<N> _array;
 
+  int get length => _array.length;
+
+  int operator [](int i) => _array[i];
+  void operator []=(int i, int val) => _array[i] = val;
+
   /// Gets invoked when memory is freed automatically.
   void Function(MemoryArray<N> memArr) onFree = (MemoryArray<N> memArr) {};
 
