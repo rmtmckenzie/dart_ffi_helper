@@ -37,6 +37,10 @@ abstract class MemoryArray<N extends NativeType> {
     _view = _asTypedList(rawPtr, count);
   }
 
+  MemoryArray.nullPointer()
+      : rawPtr = nullptr.cast(),
+        _view = const [];
+
   List<int> _asTypedList(Pointer<N> ptr, int length);
 
   /// Frees the allocated memory.
