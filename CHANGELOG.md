@@ -16,3 +16,7 @@
 
 ## 1.3.0
 - add [length] propberty and operator [] and []= to MemoryArray and AutoFree. It just forwards to [view] and makes things a little more concise
+
+## 1.4.0
+- remove experimental AutoFree
+- add constructor for nullPointer
