@@ -20,3 +20,7 @@
 ## 1.4.0
 - remove experimental AutoFree
 - add constructor for nullPointer
+
+## 1.4.1
+- add Uint16List, Uint32List, Uint64List
+- fix pedantic analyzer issues
