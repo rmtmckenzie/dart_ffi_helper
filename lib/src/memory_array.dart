@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:ffi';
-import 'dart:typed_data' as ffi;
 import 'dart:typed_data';
 
 import 'package:ffi/ffi.dart' as ffi;
@@ -19,7 +18,8 @@ abstract class MemoryArray<N extends NativeType> {
   /// Length of [view];
   int get length => _view.length;
 
-  MemoryArray.fromTypedList(List<int> data) : rawPtr = ffi.allocate<N>(count: data.length) {
+  MemoryArray.fromTypedList(List<int> data)
+      : rawPtr = ffi.malloc.allocate<N>(data.length) {
     _view = _asTypedList(rawPtr, data.length);
     (_view).setAll(0, data);
   }
@@ -32,7 +32,7 @@ abstract class MemoryArray<N extends NativeType> {
   /// Allocates an array with [count] elements of [N]
   MemoryArray.allocate({int count = 1})
       : assert(count > 0, 'count must be bigger than 1'),
-        rawPtr = ffi.allocate(count: count) {
+        rawPtr = ffi.malloc.allocate(count) {
     _view = _asTypedList(rawPtr, count);
   }
 
@@ -46,7 +46,7 @@ abstract class MemoryArray<N extends NativeType> {
   /// Don't forget to call or there might be a memory leak.
   /// Consider Exceptions.
   void free() {
-    ffi.free(rawPtr);
+    ffi.malloc.free(rawPtr);
   }
 
   int operator [](int i) {
